@@ -1,0 +1,10 @@
+app:
+  swagger:
+    enabled: true
+    title: 用户接口
+    group: 用户模块
+    description: 用户接口文档
+    version: 接口文档版本
+    base-package: com.freeing.seckill.user
+    basePath:
+      - /
