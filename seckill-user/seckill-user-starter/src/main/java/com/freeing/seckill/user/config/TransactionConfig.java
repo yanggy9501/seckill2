@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 @Configuration
-@MapperScan(value = {"io.binghe.seckill.user.infrastructure.mapper"})
+@MapperScan(value = {"com.freeing.seckill.user.infrastructure.mapper"})
 @ComponentScan(value = {"com.freeing.seckill", "com.alibaba.cola"})
 @PropertySource(value = {"classpath:properties/mysql.properties", "classpath:properties/mybatis.properties"})
 @Import({JdbcConfig.class, RedisConfig.class, MyBatisConfig.class})

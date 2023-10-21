@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @description COLA框架的配置
+ *  COLA框架的配置
  */
 @Configuration
 @ComponentScan(value = {"com.alibaba.cola"})

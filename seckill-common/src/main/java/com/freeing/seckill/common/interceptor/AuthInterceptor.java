@@ -37,7 +37,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private boolean loginAlready(HttpServletRequest request) {
         Object userIdObj = request.getAttribute(USER_ID);
-        if (Objects.isNull(userIdObj)) {
+        if (Objects.nonNull(userIdObj)) {
             return true;
         }
         return false;

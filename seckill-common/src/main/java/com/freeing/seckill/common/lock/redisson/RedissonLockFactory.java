@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * redis 分布式锁工厂实现类
+ *
  * @author yanggy
  */
 @Service
@@ -30,7 +32,7 @@ public class RedissonLockFactory implements DistributedLockFactory {
             @Override
             public boolean tryLock(long waitTime, long leaseTime, TimeUnit unit) throws InterruptedException {
                 boolean isLockSuccess = rLock.tryLock(waitTime, leaseTime, unit);
-                logger.info("{} get lock result:{}", key, isLockSuccess);
+                logger.info("try lock key {}, result is {}", key, isLockSuccess);
                 return isLockSuccess;
             }
 

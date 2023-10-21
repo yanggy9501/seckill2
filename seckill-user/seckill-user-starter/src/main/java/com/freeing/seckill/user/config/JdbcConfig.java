@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import java.sql.SQLException;
 
 /**
- * @description 数据库配置
+ * 数据库配置
  */
 public class JdbcConfig {
     @Value("${jdbc.initialSize}")
