@@ -25,6 +25,7 @@ public interface SeckillActivityService {
      * 获取正在进行中的活动列表
      */
     List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status);
+
     /**
      * 活动列表
      */

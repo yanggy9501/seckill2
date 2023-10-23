@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -54,5 +56,15 @@ public class SeckillActivityDomainServiceImpl implements SeckillActivityDomainSe
             throw new SeckillException(ErrorCode.PASSWORD_IS_NULL);
         }
         return seckillActivityRepository.getSeckillActivityById(activitId);
+    }
+
+    @Override
+    public List<SeckillActivity> getSeckillActivityList(Integer status) {
+        return seckillActivityRepository.getSeckillActivityList(status);
+    }
+
+    @Override
+    public List<SeckillActivity> getSeckillActivityListBetweenStartTimeAndEndTime(Date currentTime, Integer status) {
+        return seckillActivityRepository.getSeckillActivityListBetweenStartTimeAndEndtime(currentTime, status);
     }
 }

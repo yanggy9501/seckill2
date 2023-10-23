@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.freeing.seckill.activity.application.command.SeckillActivityCommand;
 import com.freeing.seckill.activity.domain.model.entity.SeckillActivity;
+import com.freeing.seckill.common.builder.SeckillCommonBuilder;
 import com.freeing.seckill.common.cache.model.SeckillBusinessCache;
 import org.springframework.beans.BeanUtils;
 
@@ -14,7 +15,7 @@ import java.util.Objects;
  *
  * @author yanggy
  */
-public class SeckillActivityBuilder {
+public class SeckillActivityBuilder extends SeckillCommonBuilder {
 
     public static SeckillActivity toSeckillActivity(SeckillActivityCommand seckillActivityCommand) {
         if (Objects.isNull(seckillActivityCommand)) {
