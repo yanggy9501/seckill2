@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author yanggy
  */
-@Api(tags = "用户 Controller")
+@Api(tags = "用户控制器")
 @RestController
 @RequestMapping("/user")
 public class SeckillUserController {
@@ -22,7 +22,7 @@ public class SeckillUserController {
     @Autowired
     private SeckillUserService seckillUserService;
 
-    @ApiOperation(value = "用户登录")
+    @ApiOperation(value = "/user/login", notes = "用户登录")
     @PostMapping("/login")
     public R login(@RequestBody SeckillUserDTO seckillUserDTO) {
         String token = seckillUserService.login(seckillUserDTO.getUserName(), seckillUserDTO.getPassword());

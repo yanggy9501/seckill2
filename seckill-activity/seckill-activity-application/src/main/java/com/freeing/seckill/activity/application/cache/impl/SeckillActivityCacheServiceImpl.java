@@ -101,8 +101,8 @@ public class SeckillActivityCacheServiceImpl implements SeckillActivityCacheServ
 
 
     @Override
-    public SeckillBusinessCache<SeckillActivity> tryUpdateSeckillActivityCacheByLock(Long activitYId, boolean doubleCheck) {
-        logger.info("tryUpdateSeckillActivityCacheByLock|更新秒杀活动缓存|{}", activitYId);
+    public SeckillBusinessCache<SeckillActivity> tryUpdateSeckillActivityCacheByLock(Long activityId, boolean doubleCheck) {
+        logger.info("tryUpdateSeckillActivityCacheByLock|更新秒杀活动缓存|{}", activityId);
         DistributedLock lock = distributedLockFactory
             .getDistributedLock(SECKILL_ACTIVITY_UPDATE_CACHE_LOCK_KEY.concat(String.valueOf(SECKILL_ACTIVITY_UPDATE_CACHE_LOCK_KEY)));
 
@@ -115,14 +115,14 @@ public class SeckillActivityCacheServiceImpl implements SeckillActivityCacheServ
             SeckillBusinessCache<SeckillActivity> seckillActivityCache;
             if (doubleCheck) {
                 // 获取锁成功后，再次从缓存中获取数据，防止高并发下多个线程争抢锁的过程中，后续的线程再等待1秒的过程中，前面的线程释放了锁，后续的线程获取锁成功后再次更新分布式缓存数据
-                Object cacheValue = distributedCacheService.getObject(buildCacheKey(activitYId));
+                Object cacheValue = distributedCacheService.getObject(buildCacheKey(activityId));
                 seckillActivityCache = SeckillActivityBuilder.getSeckillBusinessCache(cacheValue, SeckillActivity.class);
                 if (seckillActivityCache != null){
                     return seckillActivityCache;
                 }
             }
 
-            SeckillActivity seckillActivity = seckillActivityDomainService.getSeckillActivityById(activitYId);
+            SeckillActivity seckillActivity = seckillActivityDomainService.getSeckillActivityById(activityId);
             if (Objects.isNull(seckillActivity)) {
                 seckillActivityCache = new SeckillBusinessCache<SeckillActivity>().notExist();
             } else {
@@ -133,11 +133,11 @@ public class SeckillActivityCacheServiceImpl implements SeckillActivityCacheServ
 
             // 将数据保存到分布式缓存
             distributedCacheService
-                .put(buildCacheKey(activitYId), JSON.toJSONString(seckillActivityCache), SeckillConstants.FIVE_MINUTES);
-            logger.info("tryUpdateSeckillActivityCacheByLock|分布式缓存已经更新|{}", activitYId);
+                .put(buildCacheKey(activityId), JSON.toJSONString(seckillActivityCache), SeckillConstants.FIVE_MINUTES);
+            logger.info("tryUpdateSeckillActivityCacheByLock|分布式缓存已经更新|{}", activityId);
             return seckillActivityCache;
         } catch (InterruptedException e) {
-            logger.warn("tryUpdateSeckillActivityCacheByLock|更新分布式缓存失败|{}", activitYId);
+            logger.warn("tryUpdateSeckillActivityCacheByLock|更新分布式缓存失败|{}", activityId);
             return new SeckillBusinessCache<SeckillActivity>().retryLater();
         } finally {
             lock.unlock();

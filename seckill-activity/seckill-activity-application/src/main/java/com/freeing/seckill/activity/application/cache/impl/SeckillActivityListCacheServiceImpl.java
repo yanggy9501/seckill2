@@ -101,7 +101,7 @@ public class SeckillActivityListCacheServiceImpl implements SeckillActivityListC
 
     @Override
     public SeckillBusinessCache<List<SeckillActivity>> tryUpdateSeckillActivityCacheByLock(Integer status, boolean doubleCheck) {
-        logger.info("SeckillActivitesCache|更新分布式缓存|{}", status);
+        logger.info("SeckillActivitesCache|更新秒杀活动列表分布式缓存|{}", status);
         DistributedLock lock = distributedLockFactory
             .getDistributedLock(SECKILL_ACTIVITES_UPDATE_CACHE_LOCK_KEY.concat(String.valueOf(status)));
         try {
@@ -128,10 +128,10 @@ public class SeckillActivityListCacheServiceImpl implements SeckillActivityListC
                     .withVersion(SystemClock.now());
             }
             distributedCacheService.put(buildCacheKey(status), JSON.toJSONString(seckillActivitiyListCache), SeckillConstants.FIVE_MINUTES);
-            logger.info("SeckillActivitesCache|分布式缓存已经更新|{}", status);
+            logger.info("SeckillActivitesCache|秒杀活动列表分布式缓存已更新|{}", status);
             return seckillActivitiyListCache;
         } catch (InterruptedException  e) {
-            logger.info("SeckillActivitesCache|更新分布式缓存失败|{}", status);
+            logger.info("SeckillActivitesCache|秒杀活动列表分布式缓存更新失败|{}", status);
             return  new SeckillBusinessCache<List<SeckillActivity>>().retryLater();
         } finally {
             lock.unlock();

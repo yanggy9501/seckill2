@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author yanggy
  */
-@Api(tags = "秒杀活动 Controller")
+@Api(tags = "秒杀活动控制器")
 @RestController
 @RequestMapping("/activity")
 public class SeckillActivityController {
@@ -25,20 +25,21 @@ public class SeckillActivityController {
     @Autowired
     private SeckillActivityService seckillActivityService;
 
-    @ApiOperation(value = "保存秒杀活动")
+    @ApiOperation(value = "新增一个秒杀活动", notes = "新增一个秒杀活动并更新缓存")
     @PostMapping("/saveSeckillActivity")
     public R saveSeckillActivity(SeckillActivityCommand seckillActivityCommand) {
         seckillActivityService.saveSeckillActivity(seckillActivityCommand);
         return R.success();
     }
 
-    @ApiOperation(value = "获取秒杀活动列表")
+    // TODO 完善
     @GetMapping("/getSeckillActivityList")
     public R getSeckillActivityList(@RequestParam(value = "status", required = false) Integer status) {
         List<SeckillActivity> seckillActivityList = seckillActivityService.getSeckillActivityList(status);
         return R.success(seckillActivityList);
     }
 
+    // TODO 完善
     @RequestMapping(value = "/getSeckillActivityListBetweenStartTimeAndEndTime", method = {RequestMethod.GET, RequestMethod.POST})
     public R getSeckillActivityListBetweenStartTimeAndEndTime(
         @RequestParam(value = "currentTime", required = false) String currentTime,
@@ -51,10 +52,13 @@ public class SeckillActivityController {
     /**
      * 获取秒杀活动列表
      */
-    @RequestMapping(value = "/seckillActivityList", method = {RequestMethod.GET, RequestMethod.POST})
-    public R getSeckillActivityList(@RequestParam(value = "status", required = false) Integer status,
+    @ApiOperation(value = "查询秒杀活动列表", notes = "查询上线或下线的的秒杀活动")
+    @GetMapping(value = "/seckillActivityList")
+    public R getSeckillActivityList(
+        @RequestParam(value = "status", required = false) Integer status,
         @RequestParam(value = "version", required = false) Long version) {
-        return R.success(seckillActivityService.getSeckillActivityList(status, version));
+        List<SeckillActivityDTO> seckillActivityList = seckillActivityService.getSeckillActivityList(status, version);
+        return R.success(seckillActivityList);
     }
 
     /**
