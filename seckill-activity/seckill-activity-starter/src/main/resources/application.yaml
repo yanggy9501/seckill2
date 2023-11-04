@@ -5,6 +5,6 @@ app:
     group: 用户模块
     description: 用户接口文档
     version: 1.0
-    base-package: com.freeing.seckill
+    base-package: com.freeing.seckill.order
     basePath:
       - /

@@ -50,11 +50,17 @@ public class SeckillOrderDomainServiceImpl implements SeckillOrderDomainService 
 
     @Override
     public List<SeckillOrder> getSeckillOrderByUserId(Long userId) {
-        return null;
+        if (Objects.isNull(userId)) {
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        return seckillOrderRepository.getSeckillOrderByUserId(userId);
     }
 
     @Override
     public List<SeckillOrder> getSeckillOrderByActivityId(Long activityId) {
-        return null;
+        if (Objects.isNull(activityId)) {
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        return seckillOrderRepository.getSeckillOrderByActivityId(activityId);
     }
 }

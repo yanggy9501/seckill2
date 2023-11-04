@@ -18,6 +18,7 @@ import java.util.Objects;
  */
 @Repository
 public class SeckillOrderRepositoryImpl implements SeckillOrderRepository {
+
     @Autowired
     private SeckillOrderMapper seckillOrderMapper;
 
@@ -31,11 +32,17 @@ public class SeckillOrderRepositoryImpl implements SeckillOrderRepository {
 
     @Override
     public List<SeckillOrder> getSeckillOrderByUserId(Long userId) {
-        return null;
+        if (Objects.isNull(userId)) {
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        return seckillOrderMapper.getSeckillOrderByUserId(userId);
     }
 
     @Override
     public List<SeckillOrder> getSeckillOrderByActivityId(Long activityId) {
-        return null;
+        if (Objects.isNull(activityId)) {
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        return seckillOrderMapper.getSeckillOrderByActivityId(activityId);
     }
 }

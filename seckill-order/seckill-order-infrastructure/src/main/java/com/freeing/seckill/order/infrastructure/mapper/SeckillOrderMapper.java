@@ -1,10 +1,12 @@
 package com.freeing.seckill.order.infrastructure.mapper;
 
 import com.freeing.seckill.order.domain.model.entity.SeckillOrder;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface SeckillOrderMapper {
     /**
      * 保存订单

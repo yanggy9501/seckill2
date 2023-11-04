@@ -18,10 +18,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.freeing</groupId>
-            <artifactId>com.freeing.common.knife4j</artifactId>
-            <version>1.0</version>
-        </dependency>
+
     </dependencies>
 </project>

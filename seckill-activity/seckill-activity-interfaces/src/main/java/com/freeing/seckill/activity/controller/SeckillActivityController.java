@@ -5,8 +5,6 @@ import com.freeing.seckill.activity.application.service.SeckillActivityService;
 import com.freeing.seckill.activity.domain.model.entity.SeckillActivity;
 import com.freeing.seckill.common.model.dto.SeckillActivityDTO;
 import com.freeing.seckill.common.response.R;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,6 @@ import java.util.List;
 /**
  * @author yanggy
  */
-@Api(tags = "秒杀活动控制器")
 @RestController
 @RequestMapping("/activity")
 public class SeckillActivityController {
@@ -25,7 +22,6 @@ public class SeckillActivityController {
     @Autowired
     private SeckillActivityService seckillActivityService;
 
-    @ApiOperation(value = "新增一个秒杀活动", notes = "新增一个秒杀活动并更新缓存")
     @PostMapping("/saveSeckillActivity")
     public R saveSeckillActivity(SeckillActivityCommand seckillActivityCommand) {
         seckillActivityService.saveSeckillActivity(seckillActivityCommand);
@@ -52,7 +48,6 @@ public class SeckillActivityController {
     /**
      * 获取秒杀活动列表
      */
-    @ApiOperation(value = "查询秒杀活动列表", notes = "查询上线或下线的的秒杀活动")
     @GetMapping(value = "/seckillActivityList")
     public R getSeckillActivityList(
         @RequestParam(value = "status", required = false) Integer status,

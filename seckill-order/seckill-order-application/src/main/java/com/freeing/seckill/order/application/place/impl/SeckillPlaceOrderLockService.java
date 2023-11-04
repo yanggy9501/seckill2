@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
     private final Logger logger = LoggerFactory.getLogger(SeckillPlaceOrderLockService.class);
 
-    @DubboReference(version = "1.0.0")
+    @DubboReference(version = "1.0.0", check = false)
     private SeckillGoodsDubboService seckillGoodsDubboService;
 
     @Autowired

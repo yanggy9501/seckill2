@@ -8,13 +8,24 @@ import java.io.Serializable;
 public class SeckillOrderCommand implements Serializable {
 
     private static final long serialVersionUID = 2150071992328498340L;
-    //商品id
+    /**
+     * 商品id
+     */
     private Long goodsId;
-    //购买数量
+
+    /**
+     * 购买数量
+     */
     private Integer quantity;
-    //活动id
+
+    /**
+     * 活动id
+     */
     private Long activityId;
-    //商品版本号
+
+    /**
+     * 商品版本号
+     */
     private Long version;
 
     public Long getGoodsId() {

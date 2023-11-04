@@ -5,6 +5,8 @@ import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
 import com.freeing.seckill.common.shiro.utils.JwtUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -18,6 +20,8 @@ import java.util.Objects;
 @Component
 public class AuthInterceptor implements HandlerInterceptor {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthInterceptor.class);
+
     private static final String USER_ID = "userId";
 
     @Override
@@ -28,6 +32,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String token = request.getHeader(SeckillConstants.TOKEN_HEADER_NAME);
         if (StringUtils.isEmpty(token)) {
+            logger.info("AuthInterceptor|用户未登录|uri={}", request.getRequestURI());
             throw new SeckillException(ErrorCode.USER_NOT_LOGIN);
         }
         Long userId = JwtUtils.getUserId(token);

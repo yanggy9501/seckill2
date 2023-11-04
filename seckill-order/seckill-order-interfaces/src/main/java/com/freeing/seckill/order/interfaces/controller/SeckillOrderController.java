@@ -5,10 +5,7 @@ import com.freeing.seckill.common.response.R;
 import com.freeing.seckill.order.application.model.command.SeckillOrderCommand;
 import com.freeing.seckill.order.application.service.SeckillSubmitOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 秒杀订单 Controller
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author yanggy
  */
 @RestController
+@RequestMapping("/order")
 public class SeckillOrderController {
 
     @Autowired
@@ -24,9 +22,10 @@ public class SeckillOrderController {
     /**
      * 保存秒杀订单
      */
-    @RequestMapping(value = "/saveSeckillOrder", method = {RequestMethod.GET, RequestMethod.POST})
+    @PostMapping(value = "/saveSeckillOrder")
     public R saveSeckillOrder(@RequestAttribute Long userId, SeckillOrderCommand seckillOrderCommand) {
-        SeckillOrderSubmitDTO seckillOrderSubmitDTO = seckillSubmitOrderService.saveSeckillOrder(userId, seckillOrderCommand);
+        SeckillOrderSubmitDTO seckillOrderSubmitDTO =
+            seckillSubmitOrderService.saveSeckillOrder(userId, seckillOrderCommand);
         return R.success(seckillOrderSubmitDTO);
     }
 }

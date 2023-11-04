@@ -3,8 +3,6 @@ package com.freeing.seckill.user.controller;
 import com.freeing.seckill.common.model.dto.SeckillUserDTO;
 import com.freeing.seckill.common.response.R;
 import com.freeing.seckill.user.application.service.SeckillUserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author yanggy
  */
-@Api(tags = "用户控制器")
 @RestController
 @RequestMapping("/user")
 public class SeckillUserController {
@@ -22,7 +19,6 @@ public class SeckillUserController {
     @Autowired
     private SeckillUserService seckillUserService;
 
-    @ApiOperation(value = "/user/login", notes = "用户登录")
     @PostMapping("/login")
     public R login(@RequestBody SeckillUserDTO seckillUserDTO) {
         String token = seckillUserService.login(seckillUserDTO.getUserName(), seckillUserDTO.getPassword());

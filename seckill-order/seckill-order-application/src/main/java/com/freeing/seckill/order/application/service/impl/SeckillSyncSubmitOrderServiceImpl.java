@@ -22,6 +22,7 @@ public class SeckillSyncSubmitOrderServiceImpl extends SeckillBaseSubmitOrderSer
     public SeckillOrderSubmitDTO saveSeckillOrder(Long userId, SeckillOrderCommand seckillOrderCommand) {
         this.checkSeckillOrder(userId, seckillOrderCommand);
         Long txNo = this.seckillPlaceOrderService.placeOrder(userId, seckillOrderCommand);
-        return new SeckillOrderSubmitDTO(String.valueOf(txNo), seckillOrderCommand.getGoodsId(), SeckillConstants.TYPE_ORDER);
+        return new SeckillOrderSubmitDTO(String.valueOf(txNo), seckillOrderCommand.getGoodsId(),
+                                         SeckillConstants.TYPE_ORDER);
     }
 }
