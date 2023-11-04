@@ -51,7 +51,7 @@ public interface SeckillPlaceOrderService {
             throw new SeckillException(ErrorCode.GOODS_NOT_EXISTS);
         }
         // 已经超出活动时间范围
-        if (seckillGoods.isInSeckilling()) {
+        if (!seckillGoods.isInSeckilling()) {
             throw new SeckillException(ErrorCode.BEYOND_TIME);
         }
         // 商品已下架

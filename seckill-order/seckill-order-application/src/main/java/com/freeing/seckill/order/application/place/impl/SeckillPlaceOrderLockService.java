@@ -63,7 +63,7 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
 
         try {
             // 尝试获取锁
-            if (lock.tryLock(2, 5, TimeUnit.SECONDS)) {
+            if (!lock.tryLock(2, 5, TimeUnit.SECONDS)) {
                 throw new SeckillException(ErrorCode.RETRY_LATER);
             }
             // 查询库存信息
@@ -78,19 +78,19 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
             SeckillOrder seckillOrder = this.buildSeckillOrder(userId, seckillOrderCommand, seckillGoods);
             // 保存订单
             seckillOrderDomainService.saveSeckillOrder(seckillOrder);
-            //扣减数据库库存
+            // 扣减数据库库存
             seckillGoodsDubboService.updateDbAvailableStock(seckillOrderCommand.getQuantity(), seckillOrderCommand.getGoodsId());
             return seckillOrder.getId();
         }
         catch (Exception e) {
-            //已经扣减了缓存中的库存，则需要增加回来
+            // 已经扣减了缓存中的库存，则需要增加回来
             if (isDecrementCacheStock){
                 distributedCacheService.increment(key, seckillOrderCommand.getQuantity());
             }
             if (e instanceof InterruptedException) {
-                logger.error("SeckillPlaceOrderLockService|下单分布式锁被中断|参数:{}|异常信息:{}", JSONObject.toJSONString(seckillOrderCommand), e.getMessage());
+                logger.error("SeckillPlaceOrderLockService|下单分布式锁被中断|参数 {}", JSONObject.toJSONString(seckillOrderCommand), e);
             } else {
-                logger.error("SeckillPlaceOrderLockService|分布式锁下单失败|参数:{}|异常信息:{}", JSONObject.toJSONString(seckillOrderCommand), e.getMessage());
+                logger.error("SeckillPlaceOrderLockService|分布式锁下单失败|参数 {}", JSONObject.toJSONString(seckillOrderCommand), e);
             }
             throw new SeckillException(e.getMessage());
         } finally {
