@@ -5,6 +5,7 @@ import com.freeing.seckill.common.constants.SeckillConstants;
 import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
 import com.freeing.seckill.common.model.dto.SeckillGoodsDTO;
+import com.freeing.seckill.common.model.message.TxMessage;
 import com.freeing.seckill.common.util.id.SnowFlakeFactory;
 import com.freeing.seckill.dubbo.interfaces.goods.SeckillGoodsDubboService;
 import com.freeing.seckill.mq.MessageSenderService;
@@ -18,7 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
- * 基于数据库下单
+ * 基于数据库下单扣减库存
  *
  * @author yanggy
  */
@@ -49,12 +50,12 @@ public class SeckillPlaceOrderDbService implements SeckillPlaceOrderService {
             }
         } catch (Exception e) {
             exception = true;
-            logger.error("SeckillPlaceOrderDbService|下单异常|参数:{}|异常信息:{}", JSONObject.toJSONString(seckillOrderCommand), e.getMessage());
+            logger.error("SeckillPlaceOrderDbService|下单异常|参数:{}", JSONObject.toJSONString(seckillOrderCommand), e);
         }
         // 发送事物消息
-        messageSenderService.sendMessageInTransaction(this.getTxMessage(SeckillConstants.TOPIC_TX_MSG, txNo, userId,
-            SeckillConstants.PLACE_ORDER_TYPE_DB, exception, seckillOrderCommand, seckillGoods),
-            null);
+        TxMessage txMessage = this.getTxMessage(SeckillConstants.TOPIC_TX_MSG, txNo, userId,
+            SeckillConstants.PLACE_ORDER_TYPE_DB, exception, seckillOrderCommand, seckillGoods);
+        messageSenderService.sendMessageInTransaction(txMessage, null);
         return txNo;
     }
 }

@@ -8,22 +8,36 @@ import java.math.BigDecimal;
  * @author yanggy
  */
 public class TxMessage extends ErrorMessage {
-    //活动id
+    /**
+     * 活动id
+     */
     private Long activityId;
-    //商品版本号
+
+    /**
+     * 商品版本号
+     */
     private Long version;
-    //用户id
+
+    /**
+     * 用户id
+     */
     private Long userId;
-    //商品名称
+
+    /**
+     * 商品名称
+     */
     private String goodsName;
-    //秒杀活动价格
+
+    /**
+     * 秒杀活动价格
+     */
     private BigDecimal activityPrice;
 
     public TxMessage() {
     }
 
-    public TxMessage(String destination, Long txNo, Long goodsId, Integer quantity, Long activityId, Long version, Long userId, String goodsName,
-        BigDecimal activityPrice, String placeOrderType, Boolean exception) {
+    public TxMessage(String destination, Long txNo, Long goodsId, Integer quantity, Long activityId, Long version,
+        Long userId, String goodsName, BigDecimal activityPrice, String placeOrderType, Boolean exception) {
 
         super(destination, txNo, goodsId, quantity, placeOrderType, exception);
         this.activityId = activityId;
