@@ -1,6 +1,8 @@
 package com.freeing.seckill.order.application.place;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.freeing.seckill.common.constants.SeckillConstants;
 import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
 import com.freeing.seckill.common.model.dto.SeckillGoodsDTO;
@@ -9,6 +11,8 @@ import com.freeing.seckill.common.model.message.TxMessage;
 import com.freeing.seckill.common.util.id.SnowFlakeFactory;
 import com.freeing.seckill.order.application.model.command.SeckillOrderCommand;
 import com.freeing.seckill.order.domain.model.entity.SeckillOrder;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -26,6 +30,13 @@ public interface SeckillPlaceOrderService {
     Long placeOrder(Long userId, SeckillOrderCommand seckillOrderCommand);
 
     /**
+     *  本地事务执行保存订单操作
+     *
+     * @param txMessage 事务消息
+     */
+    void saveOrderInTransaction(TxMessage txMessage);
+
+    /**
      * 构建订单
      */
     default SeckillOrder buildSeckillOrder(Long userId, SeckillOrderCommand seckillOrderCommand, SeckillGoodsDTO seckillGoods){
@@ -38,6 +49,25 @@ public interface SeckillPlaceOrderService {
         seckillOrder.setActivityPrice(seckillGoods.getActivityPrice());
         BigDecimal orderPrice = seckillGoods.getActivityPrice().multiply(BigDecimal.valueOf(seckillOrder.getQuantity()));
         seckillOrder.setOrderPrice(orderPrice);
+        seckillOrder.setStatus(SeckillOrderStatus.CREATED.getCode());
+        seckillOrder.setCreateTime(new Date());
+        return seckillOrder;
+    }
+
+    /**
+     * 构建订单
+     */
+    default SeckillOrder buildSeckillOrder(TxMessage txMessage){
+        SeckillOrder seckillOrder = new SeckillOrder();
+        seckillOrder.setId(txMessage.getTxNo());
+        seckillOrder.setUserId(txMessage.getUserId());
+        seckillOrder.setGoodsId(txMessage.getGoodsId());
+        seckillOrder.setGoodsName(txMessage.getGoodsName());
+        seckillOrder.setActivityPrice(txMessage.getActivityPrice());
+        seckillOrder.setQuantity(txMessage.getQuantity());
+        BigDecimal orderPrice = txMessage.getActivityPrice().multiply(BigDecimal.valueOf(seckillOrder.getQuantity()));
+        seckillOrder.setOrderPrice(orderPrice);
+        seckillOrder.setActivityId(txMessage.getActivityId());
         seckillOrder.setStatus(SeckillOrderStatus.CREATED.getCode());
         seckillOrder.setCreateTime(new Date());
         return seckillOrder;
@@ -70,11 +100,16 @@ public interface SeckillPlaceOrderService {
         }
     }
 
-    default TxMessage getTxMessage(String destination, Long txNo, Long userId, String placeOrderType, Boolean exception,
-        SeckillOrderCommand seckillOrderCommand, SeckillGoodsDTO seckillGoods){
-        //构建事务消息
-        return new TxMessage(destination, txNo, seckillOrderCommand.getGoodsId(), seckillOrderCommand.getQuantity(),
+    /**
+     * 事务消息
+     */
+    default Message<String> getTxMessage(Long txNo, Long userId, String placeOrderType, Boolean exception, SeckillOrderCommand seckillOrderCommand, SeckillGoodsDTO seckillGoods){
+        // 构建事务消息
+        TxMessage txMessage = new TxMessage(txNo, seckillOrderCommand.getGoodsId(), seckillOrderCommand.getQuantity(),
             seckillOrderCommand.getActivityId(), seckillOrderCommand.getVersion(), userId, seckillGoods.getGoodsName(),
             seckillGoods.getActivityPrice(), placeOrderType, exception);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put(SeckillConstants.TX_MSG_KEY, txMessage);
+        return MessageBuilder.withPayload(jsonObject.toJSONString()).build();
     }
 }

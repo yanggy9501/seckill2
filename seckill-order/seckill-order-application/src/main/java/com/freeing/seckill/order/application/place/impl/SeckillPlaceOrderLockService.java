@@ -8,6 +8,7 @@ import com.freeing.seckill.common.exception.SeckillException;
 import com.freeing.seckill.common.lock.DistributedLock;
 import com.freeing.seckill.common.lock.factory.DistributedLockFactory;
 import com.freeing.seckill.common.model.dto.SeckillGoodsDTO;
+import com.freeing.seckill.common.model.message.TxMessage;
 import com.freeing.seckill.dubbo.interfaces.goods.SeckillGoodsDubboService;
 import com.freeing.seckill.order.application.model.command.SeckillOrderCommand;
 import com.freeing.seckill.order.application.place.SeckillPlaceOrderService;
@@ -79,7 +80,8 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
             // 保存订单
             seckillOrderDomainService.saveSeckillOrder(seckillOrder);
             // 扣减数据库库存
-            seckillGoodsDubboService.updateDbAvailableStock(seckillOrderCommand.getQuantity(), seckillOrderCommand.getGoodsId());
+            boolean success = seckillGoodsDubboService.updateDbAvailableStock(seckillOrderCommand.getQuantity(),
+                                                                                seckillOrderCommand.getGoodsId());
             return seckillOrder.getId();
         }
         catch (Exception e) {
@@ -96,5 +98,10 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    public void saveOrderInTransaction(TxMessage txMessage) {
+
     }
 }

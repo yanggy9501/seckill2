@@ -37,7 +37,8 @@ public abstract class SeckillBaseSubmitOrderServiceImpl implements SeckillSubmit
             throw new SeckillException(ErrorCode.USER_INVALID);
         }
         // 获取商品信息
-        SeckillGoodsDTO seckillGoods  = seckillGoodsDubboService.getSeckillGoods(seckillOrderCommand.getGoodsId(), seckillOrderCommand.getVersion());
+        SeckillGoodsDTO seckillGoods  =
+            seckillGoodsDubboService.getSeckillGoods(seckillOrderCommand.getGoodsId(), seckillOrderCommand.getVersion());
         // 检测商品信息
         seckillPlaceOrderService.checkSeckillGoods(seckillOrderCommand, seckillGoods);
     }

@@ -1,6 +1,7 @@
 package com.freeing.seckill.order.application.place.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freeing.seckill.common.cache.distribute.DistributedCacheService;
 import com.freeing.seckill.common.constants.SeckillConstants;
 import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
@@ -11,12 +12,18 @@ import com.freeing.seckill.dubbo.interfaces.goods.SeckillGoodsDubboService;
 import com.freeing.seckill.mq.MessageSenderService;
 import com.freeing.seckill.order.application.model.command.SeckillOrderCommand;
 import com.freeing.seckill.order.application.place.SeckillPlaceOrderService;
+import com.freeing.seckill.order.domain.model.entity.SeckillOrder;
+import com.freeing.seckill.order.domain.service.SeckillOrderDomainService;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 基于数据库下单扣减库存
@@ -33,6 +40,12 @@ public class SeckillPlaceOrderDbService implements SeckillPlaceOrderService {
 
     @Autowired
     private MessageSenderService messageSenderService;
+
+    @Autowired
+    private DistributedCacheService distributedCacheService;
+
+    @Autowired
+    private SeckillOrderDomainService seckillOrderDomainService;
 
     @Override
     public Long placeOrder(Long userId, SeckillOrderCommand seckillOrderCommand) {
@@ -57,5 +70,29 @@ public class SeckillPlaceOrderDbService implements SeckillPlaceOrderService {
             SeckillConstants.PLACE_ORDER_TYPE_DB, exception, seckillOrderCommand, seckillGoods);
         messageSenderService.sendMessageInTransaction(txMessage, null);
         return txNo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveOrderInTransaction(TxMessage txMessage) {
+        try {
+            // 检测事务是否已经执行过
+            String key = SeckillConstants.getKey(SeckillConstants.ORDER_TX_KEY, String.valueOf(txMessage.getTxNo()));
+            Boolean submitTransaction = distributedCacheService.hasKey(key);
+            if (BooleanUtils.isTrue(submitTransaction)) {
+                logger.info("saveOrderInTransaction|本地事务已被执行过|return|{}", txMessage.getTxNo());
+                return;
+            }
+            // 构建订单
+            SeckillOrder seckillOrder = this.buildSeckillOrder(txMessage);
+            // 保存订单
+            seckillOrderDomainService.saveSeckillOrder(seckillOrder);
+            // 保存事务日志
+            distributedCacheService.put(key, txMessage.getTxNo(), SeckillConstants.TX_LOG_EXPIRE_DAY, TimeUnit.DAYS);
+        } catch (Exception e) {
+            logger.error("saveOrderInTransaction|保存订单异常", e);
+            distributedCacheService.delete(SeckillConstants.getKey(SeckillConstants.ORDER_TX_KEY, String.valueOf(txMessage.getTxNo())));
+            throw e;
+        }
     }
 }
