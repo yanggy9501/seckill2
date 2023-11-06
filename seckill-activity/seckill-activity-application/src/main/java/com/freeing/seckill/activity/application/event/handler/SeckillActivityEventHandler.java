@@ -10,6 +10,7 @@ import com.freeing.seckill.activity.domain.event.SeckillActivityEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ import java.util.Objects;
  * @author yanggy
  */
 @EventHandler
+@ConditionalOnProperty(name = "event.publish.type", havingValue = "cola")
 public class SeckillActivityEventHandler implements EventHandlerI<Response, SeckillActivityEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SeckillActivityEventHandler.class);
 
