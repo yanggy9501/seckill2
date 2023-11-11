@@ -12,6 +12,8 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 /**
+ * RocketMQ
+ *
  * @author yanggy
  */
 @Component

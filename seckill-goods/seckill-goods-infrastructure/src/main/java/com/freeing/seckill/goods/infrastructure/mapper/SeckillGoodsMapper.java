@@ -1,6 +1,6 @@
 package com.freeing.seckill.goods.infrastructure.mapper;
 
-import com.freeing.seckill.goods.infrastructure.model.entity.SeckillGoods;
+import com.freeing.seckill.goods.domain.model.entity.SeckillGoods;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

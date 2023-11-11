@@ -2,7 +2,8 @@ package com.freeing.seckill.goods.infrastructure.repository;
 
 import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
-import com.freeing.seckill.goods.infrastructure.model.entity.SeckillGoods;
+import com.freeing.seckill.goods.domain.model.entity.SeckillGoods;
+import com.freeing.seckill.goods.domain.repository.SeckillGoodsRepository;
 import com.freeing.seckill.goods.infrastructure.mapper.SeckillGoodsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

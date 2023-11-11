@@ -23,11 +23,5 @@
             <artifactId>seckill-dubbo-interfaces</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.freeing</groupId>
-            <artifactId>seckill-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,7 @@
 package com.freeing.seckill.activity.application.service.impl;
 
 import com.freeing.seckill.activity.application.builder.SeckillActivityBuilder;
+import com.freeing.seckill.activity.application.cache.SeckillActivityCacheService;
 import com.freeing.seckill.activity.application.cache.SeckillActivityListCacheService;
 import com.freeing.seckill.activity.application.command.SeckillActivityCommand;
 import com.freeing.seckill.activity.application.service.SeckillActivityService;
@@ -33,6 +34,9 @@ public class SeckillActivityServiceImpl implements SeckillActivityService {
 
     @Autowired
     private SeckillActivityListCacheService seckillActivityListCacheService;
+
+    @Autowired
+    private SeckillActivityCacheService seckillActivityCacheService;
 
 
     @Override
@@ -92,7 +96,23 @@ public class SeckillActivityServiceImpl implements SeckillActivityService {
 
     @Override
     public SeckillActivityDTO getSeckillActivity(Long id, Long version) {
-        return null;
+        if (id == null){
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        SeckillBusinessCache<SeckillActivity> seckillActivityCache =
+            seckillActivityCacheService.getCachedSeckillActivity(id, version);
+
+        // 稍后再试，前端需要对这个状态做特殊处理，即不去刷新数据，静默稍后再试
+        if (seckillActivityCache.isRetryLater()){
+            throw new SeckillException(ErrorCode.RETRY_LATER);
+        }
+        // 缓存中的活动数据不存在
+        if (!seckillActivityCache.isExist()){
+            throw new SeckillException(ErrorCode.ACTIVITY_NOT_EXISTS);
+        }
+        SeckillActivityDTO seckillActivityDTO = SeckillActivityBuilder.toSeckillActivityDTO(seckillActivityCache.getData());
+        seckillActivityDTO.setVersion(seckillActivityCache.getVersion());
+        return seckillActivityDTO;
     }
 
     @Override

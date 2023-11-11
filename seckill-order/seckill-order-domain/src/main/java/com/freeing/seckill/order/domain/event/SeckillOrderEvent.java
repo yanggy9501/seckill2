@@ -10,8 +10,9 @@ public class SeckillOrderEvent extends SeckillBaseEvent {
      *
      * @param id 订单ID
      * @param status 订单状态
+     * @param status
      */
-    public SeckillOrderEvent(Long id, Integer status) {
-        super(id, status);
+    public SeckillOrderEvent(Long id, Integer status, String topicEvent) {
+        super(id, status, topicEvent);
     }
 }

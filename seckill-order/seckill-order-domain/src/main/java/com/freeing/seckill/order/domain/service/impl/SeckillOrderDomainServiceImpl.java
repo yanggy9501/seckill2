@@ -40,8 +40,9 @@ public class SeckillOrderDomainServiceImpl implements SeckillOrderDomainService 
         boolean saveSuccess = seckillOrderRepository.saveSeckillOrder(seckillOrder);
         if (saveSuccess) {
             logger.info("saveSeckillOrder|创建订单成功|{}", JSON.toJSONString(seckillOrder));
+            // TODO TOPIC
             SeckillOrderEvent seckillOrderEvent =
-                new SeckillOrderEvent(seckillOrder.getId(), SeckillOrderStatus.CREATED.getCode());
+                new SeckillOrderEvent(seckillOrder.getId(), SeckillOrderStatus.CREATED.getCode(), "");
             eventPublisher.publish(seckillOrderEvent);
 
         }

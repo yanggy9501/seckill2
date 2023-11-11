@@ -1,7 +1,6 @@
 package com.freeing.seckill.mq.rocketmq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.freeing.seckill.common.constants.SeckillConstants;
 import com.freeing.seckill.common.model.message.TopicMessage;
 import com.freeing.seckill.mq.MessageSenderService;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -48,7 +47,7 @@ public class RocketMQMessageSenderService implements MessageSenderService {
      */
     private Message<String> getMessage(TopicMessage message){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(SeckillConstants.MSG_KEY, message);
+//        jsonObject.put(SeckillConstants.MSG_KEY, message);
         return MessageBuilder.withPayload(jsonObject.toJSONString()).build();
     }
 }

@@ -2,6 +2,7 @@ package com.freeing.seckill.common.cache.distribute.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.freeing.seckill.common.cache.distribute.DistributedCacheService;
+import com.freeing.seckill.common.util.serializer.ProtoStuffSerializerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,7 +10,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -23,35 +23,35 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnProperty(name = "distributed.cache.type", havingValue = "redis")
 public class RedisCacheService implements DistributedCacheService {
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     private static final DefaultRedisScript<Long> DECREASE_STOCK_SCRIPT;
     private static final DefaultRedisScript<Long> INCREASE_STOCK_SCRIPT;
     private static final DefaultRedisScript<Long> INIT_STOCK_SCRIPT;
     private static final DefaultRedisScript<Long> CHECK_RECOVER_STOCK;
 
     static {
-        // 扣减库存
+        //扣减库存
         DECREASE_STOCK_SCRIPT = new DefaultRedisScript<>();
         DECREASE_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/decrement_goods_stock.lua"));
         DECREASE_STOCK_SCRIPT.setResultType(Long.class);
 
-        // 增加库存
+        //增加库存
         INCREASE_STOCK_SCRIPT = new DefaultRedisScript<>();
         INCREASE_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/increment_goods_stock.lua"));
         INCREASE_STOCK_SCRIPT.setResultType(Long.class);
 
-        // 初始化库存
+        //初始化库存
         INIT_STOCK_SCRIPT = new DefaultRedisScript<>();
         INIT_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/init_goods_stock.lua"));
         INIT_STOCK_SCRIPT.setResultType(Long.class);
 
-        // 检测是否执行过恢复缓存库存的操作
+        //检测是否执行过恢复缓存库存的操作
         CHECK_RECOVER_STOCK = new DefaultRedisScript<>();
         CHECK_RECOVER_STOCK.setLocation(new ClassPathResource("lua/check_recover_stock.lua"));
         CHECK_RECOVER_STOCK.setResultType(Long.class);
     }
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void put(String key, String value) {
@@ -83,7 +83,6 @@ public class RedisCacheService implements DistributedCacheService {
             return;
         }
         redisTemplate.opsForValue().set(key, value, expireTime, TimeUnit.SECONDS);
-
     }
 
     @Override
@@ -120,9 +119,7 @@ public class RedisCacheService implements DistributedCacheService {
         if (result == null) {
             return null;
         }
-        return null;
-        // return ProtoStuffSerializerUtils.deserializeList(String.valueOf(result).getBytes(), targetClass);
-
+        return ProtoStuffSerializerUtils.deserializeList(String.valueOf(result).getBytes(), targetClass);
     }
 
     @Override
@@ -154,11 +151,6 @@ public class RedisCacheService implements DistributedCacheService {
     }
 
     @Override
-    public Long execute(RedisScript<Long> script, List<String> keys, Object... args) {
-        return null;
-    }
-
-    @Override
     public Long decrement(String key, long delta) {
         return redisTemplate.opsForValue().decrement(key, delta);
     }
@@ -176,6 +168,11 @@ public class RedisCacheService implements DistributedCacheService {
     @Override
     public Long incrementByLua(String key, Integer quantity) {
         return redisTemplate.execute(INCREASE_STOCK_SCRIPT, Collections.singletonList(key), quantity);
+    }
+
+    @Override
+    public Long initByLua(String key, Integer quantity) {
+        return redisTemplate.execute(INIT_STOCK_SCRIPT, Collections.singletonList(key), quantity);
     }
 
     @Override
