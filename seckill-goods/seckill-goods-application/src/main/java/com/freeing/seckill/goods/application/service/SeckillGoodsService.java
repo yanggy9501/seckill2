@@ -1,7 +1,8 @@
 package com.freeing.seckill.goods.application.service;
 
-import com.freeing.seckill.goods.application.model.command.SeckillGoodsCommand;
 import com.freeing.seckill.common.model.dto.SeckillGoodsDTO;
+import com.freeing.seckill.common.model.message.TxMessage;
+import com.freeing.seckill.goods.application.model.command.SeckillGoodsCommand;
 import com.freeing.seckill.goods.domain.model.entity.SeckillGoods;
 
 import java.util.List;
@@ -48,6 +49,11 @@ public interface SeckillGoodsService {
     boolean updateAvailableStock(Integer count, Long id);
 
     /**
+     * 扣减库存
+     */
+    boolean updateAvailableStock(TxMessage txMessage);
+
+    /**
      * 扣减数据库库存
      */
     boolean updateDbAvailableStock(Integer count, Long id);
@@ -56,4 +62,5 @@ public interface SeckillGoodsService {
      * 获取当前可用库存
      */
     Integer getAvailableStockById(Long id);
+
 }

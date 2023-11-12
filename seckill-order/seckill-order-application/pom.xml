@@ -21,7 +21,13 @@
         <dependency>
             <groupId>com.freeing</groupId>
             <artifactId>seckill-order-infrastructure</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.freeing</groupId>
+            <artifactId>seckill-mq</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

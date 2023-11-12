@@ -6,15 +6,29 @@ package com.freeing.seckill.common.model.message;
  * @author yanggy
  */
 public class ErrorMessage extends TopicMessage {
-    //全局事务编号
+    /**
+     * 全局事务编号
+     */
     private Long txNo;
-    //商品id
+
+    /**
+     * /商品id
+     */
     private Long goodsId;
-    //购买数量
+
+    /**
+     * 购买数量
+     */
     private Integer quantity;
-    //下单的类型
+
+    /**
+     * 下单的类型
+     */
     private String placeOrderType;
-    //是否扣减了缓存库存
+
+    /**
+     * 是否扣减了缓存库存
+     */
     private Boolean exception;
 
     public ErrorMessage() {

@@ -1,4 +1,4 @@
-package com.freeing.seckill.order.application.service.impl;
+package com.freeing.seckill.order.application.service.base;
 
 import com.freeing.seckill.common.enums.ErrorCode;
 import com.freeing.seckill.common.exception.SeckillException;
@@ -12,7 +12,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 提交订单基础实现类
+ * 提交订单基础类
  *
  * @author yanggy
  */

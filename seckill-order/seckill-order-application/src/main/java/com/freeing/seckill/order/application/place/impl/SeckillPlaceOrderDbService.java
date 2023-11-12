@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,8 +70,14 @@ public class SeckillPlaceOrderDbService implements SeckillPlaceOrderService {
             logger.error("SeckillPlaceOrderDbService|下单异常|参数:{}", JSONObject.toJSONString(seckillOrderCommand), e);
         }
         // 发送事物消息
-        Message<String> message = this.getTxMessage(txNo, userId, SeckillConstants.PLACE_ORDER_TYPE_DB, exception, seckillOrderCommand, seckillGoods);
-        rocketMQTemplate.sendMessageInTransaction(SeckillConstants.TOPIC_TX_MSG, message, null);
+        TxMessage txMessage = this.getTxMessage(SeckillConstants.TOPIC_TX_MSG,
+            txNo,
+            userId,
+            SeckillConstants.PLACE_ORDER_TYPE_DB,
+            exception,
+            seckillOrderCommand,
+            seckillGoods);
+        messageSenderService.sendMessageInTransaction(txMessage, null);
         return txNo;
     }
 
