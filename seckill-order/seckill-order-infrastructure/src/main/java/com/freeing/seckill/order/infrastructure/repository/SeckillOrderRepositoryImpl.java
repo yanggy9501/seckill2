@@ -45,4 +45,12 @@ public class SeckillOrderRepositoryImpl implements SeckillOrderRepository {
         }
         return seckillOrderMapper.getSeckillOrderByActivityId(activityId);
     }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        if (Objects.isNull(orderId)) {
+            throw new SeckillException(ErrorCode.PARAMS_INVALID);
+        }
+        seckillOrderMapper.deleteOrder(orderId);
+    }
 }

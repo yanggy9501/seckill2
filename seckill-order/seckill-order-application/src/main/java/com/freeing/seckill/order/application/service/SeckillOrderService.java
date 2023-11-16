@@ -1,19 +1,14 @@
-package com.freeing.seckill.order.domain.service;
+package com.freeing.seckill.order.application.service;
 
+import com.freeing.seckill.common.model.message.ErrorMessage;
 import com.freeing.seckill.order.domain.model.entity.SeckillOrder;
 
 import java.util.List;
 
 /**
- * 订单领域层接口
- *
- * @author yanggy
+ * 订单服务
  */
-public interface SeckillOrderDomainService {
-    /**
-     * 保存订单
-     */
-    boolean saveSeckillOrder(SeckillOrder seckillOrder);
+public interface SeckillOrderService {
 
     /**
      * 根据用户id获取订单列表
@@ -28,7 +23,7 @@ public interface SeckillOrderDomainService {
     /**
      * 删除订单
      *
-     * @param orderId
+     * @param errorMessage mq 订单的错误消息
      */
-    void deleteOrder(Long orderId);
+    void deleteOrder(ErrorMessage errorMessage);
 }

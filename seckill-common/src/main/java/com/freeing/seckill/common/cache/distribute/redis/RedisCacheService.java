@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -29,7 +30,9 @@ public class RedisCacheService implements DistributedCacheService {
     private static final DefaultRedisScript<Long> DECREASE_STOCK_SCRIPT;
     private static final DefaultRedisScript<Long> INCREASE_STOCK_SCRIPT;
     private static final DefaultRedisScript<Long> INIT_STOCK_SCRIPT;
-    private static final DefaultRedisScript<Long> CHECK_RECOVER_STOCK;
+    private static final DefaultRedisScript<Long> CHECK_EXECUTE_SCRIPT;
+    private static final DefaultRedisScript<Long> TAKE_ORDER_TOKEN_SCRIPT;
+    private static final DefaultRedisScript<Long> RECOVER_ORDER_TOKEN_SCRIPT;
 
     static {
         //扣减库存
@@ -37,20 +40,30 @@ public class RedisCacheService implements DistributedCacheService {
         DECREASE_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/decrement_goods_stock.lua"));
         DECREASE_STOCK_SCRIPT.setResultType(Long.class);
 
-        //增加库存
+        // 增加库存
         INCREASE_STOCK_SCRIPT = new DefaultRedisScript<>();
         INCREASE_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/increment_goods_stock.lua"));
         INCREASE_STOCK_SCRIPT.setResultType(Long.class);
 
-        //初始化库存
+        // 初始化库存
         INIT_STOCK_SCRIPT = new DefaultRedisScript<>();
         INIT_STOCK_SCRIPT.setLocation(new ClassPathResource("lua/init_goods_stock.lua"));
         INIT_STOCK_SCRIPT.setResultType(Long.class);
 
-        //检测是否执行过恢复缓存库存的操作
-        CHECK_RECOVER_STOCK = new DefaultRedisScript<>();
-        CHECK_RECOVER_STOCK.setLocation(new ClassPathResource("lua/check_recover_stock.lua"));
-        CHECK_RECOVER_STOCK.setResultType(Long.class);
+        // 检测是否执行过恢复缓存库存的操作
+        CHECK_EXECUTE_SCRIPT = new DefaultRedisScript<>();
+        CHECK_EXECUTE_SCRIPT.setLocation(new ClassPathResource("lua/check_execute.lua"));
+        CHECK_EXECUTE_SCRIPT.setResultType(Long.class);
+
+        // 获取下单许可
+        TAKE_ORDER_TOKEN_SCRIPT = new DefaultRedisScript<>();
+        TAKE_ORDER_TOKEN_SCRIPT.setLocation(new ClassPathResource("lua/take_order_token.lua"));
+        TAKE_ORDER_TOKEN_SCRIPT.setResultType(Long.class);
+
+        // 恢复下单许可
+        RECOVER_ORDER_TOKEN_SCRIPT = new DefaultRedisScript<>();
+        RECOVER_ORDER_TOKEN_SCRIPT.setLocation(new ClassPathResource("lua/recover_order_token.lua"));
+        RECOVER_ORDER_TOKEN_SCRIPT.setResultType(Long.class);
     }
 
     @Override
@@ -151,6 +164,11 @@ public class RedisCacheService implements DistributedCacheService {
     }
 
     @Override
+    public Long execute(RedisScript<Long> script, List<String> keys, Object... args) {
+        return redisTemplate.execute(script, keys, args);
+    }
+
+    @Override
     public Long decrement(String key, long delta) {
         return redisTemplate.opsForValue().decrement(key, delta);
     }
@@ -176,7 +194,17 @@ public class RedisCacheService implements DistributedCacheService {
     }
 
     @Override
-    public Long checkRecoverStockByLua(String key, Long seconds) {
-        return redisTemplate.execute(CHECK_RECOVER_STOCK, Collections.singletonList(key), seconds);
+    public Long checkExecute(String key, Long seconds) {
+        return redisTemplate.execute(CHECK_EXECUTE_SCRIPT, Collections.singletonList(key), seconds);
+    }
+
+    @Override
+    public Long takeOrderToken(String key) {
+        return redisTemplate.execute(TAKE_ORDER_TOKEN_SCRIPT, Collections.singletonList(key));
+    }
+
+    @Override
+    public Long recoverOrderToken(String key) {
+        return redisTemplate.execute(RECOVER_ORDER_TOKEN_SCRIPT, Collections.singletonList(key));
     }
 }

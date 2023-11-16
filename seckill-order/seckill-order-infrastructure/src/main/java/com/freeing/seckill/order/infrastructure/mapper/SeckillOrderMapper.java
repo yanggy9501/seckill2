@@ -23,4 +23,10 @@ public interface SeckillOrderMapper {
      */
     List<SeckillOrder> getSeckillOrderByActivityId(@Param("activityId") Long activityId);
 
+    /**
+     * 删除订单数据
+     *
+     * @param orderId
+     */
+    void deleteOrder(Long orderId);
 }

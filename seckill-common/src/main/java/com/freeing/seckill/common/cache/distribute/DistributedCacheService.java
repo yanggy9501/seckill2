@@ -1,5 +1,7 @@
 package com.freeing.seckill.common.cache.distribute;
 
+import org.springframework.data.redis.core.script.RedisScript;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,11 @@ public interface DistributedCacheService {
     Long removeSet(String key, Object... values);
 
     Boolean isMemberSet(String key, Object o);
+
+    /**
+     * 执行Lua脚本
+     */
+    Long execute(RedisScript<Long> script, List<String> keys, Object... args);
 
     /**
      * 扣减内存中的数据
@@ -71,7 +78,20 @@ public interface DistributedCacheService {
     /**
      * 检测是否已经恢复缓存的库存数据
      */
-    default Long checkRecoverStockByLua(String key, Long seconds){
+    default Long checkExecute(String key, Long seconds){
+        return null;
+    }
+
+    /**
+     * 获取下单许可
+     */
+    default Long takeOrderToken(String key){
+        return null;
+    }
+    /**
+     * 恢复下单许可
+     */
+    default Long recoverOrderToken(String key){
         return null;
     }
 }
