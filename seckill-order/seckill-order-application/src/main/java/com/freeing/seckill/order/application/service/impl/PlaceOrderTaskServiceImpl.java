@@ -74,7 +74,7 @@ public class PlaceOrderTaskServiceImpl implements PlaceOrderTaskService {
             logger.info("submitOrderTask|获取下单许可失败|{},{}", seckillOrderTask.getUserId(), seckillOrderTask.getOrderTaskId());
             throw new SeckillException(ErrorCode.ORDER_TOKENS_NOT_AVAILABLE);
         }
-        //发送消息
+        // 发送消息
         boolean sendSuccess = messageSenderService.send(seckillOrderTask);
         if (!sendSuccess){
             logger.info("submitOrderTask|下单任务提交失败|{},{}", seckillOrderTask.getUserId(), seckillOrderTask.getOrderTaskId());
