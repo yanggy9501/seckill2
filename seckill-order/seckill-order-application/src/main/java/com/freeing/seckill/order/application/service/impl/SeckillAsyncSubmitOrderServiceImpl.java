@@ -27,7 +27,8 @@ public class SeckillAsyncSubmitOrderServiceImpl extends SeckillBaseSubmitOrderSe
         // 构造下单任务
         SeckillOrderTask seckillOrderTask =
             new SeckillOrderTask(SeckillConstants.TOPIC_ORDER_MSG, orderTaskId, userId, seckillOrderCommand);
-        // 添加订单
+        // 提交订单
+
 
         return null;
     }
