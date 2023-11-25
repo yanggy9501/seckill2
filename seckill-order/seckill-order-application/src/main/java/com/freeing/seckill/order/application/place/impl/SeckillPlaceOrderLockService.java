@@ -13,6 +13,7 @@ import com.freeing.seckill.common.model.dto.SeckillGoodsDTO;
 import com.freeing.seckill.common.model.message.TxMessage;
 import com.freeing.seckill.common.util.id.SnowFlakeFactory;
 import com.freeing.seckill.dubbo.interfaces.goods.SeckillGoodsDubboService;
+import com.freeing.seckill.mq.MessageSenderService;
 import com.freeing.seckill.order.application.model.command.SeckillOrderCommand;
 import com.freeing.seckill.order.application.place.SeckillPlaceOrderService;
 import com.freeing.seckill.order.domain.model.entity.SeckillOrder;
@@ -23,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +50,9 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
 
     @Autowired
     private SeckillOrderDomainService seckillOrderDomainService;
+
+    @Autowired
+    private MessageSenderService messageSenderService;
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
@@ -100,10 +103,10 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
         } finally {
             lock.unlock();
         }
-        //事务消息
-        Message<String> message = this.getTxMessage(txNo, userId,  SeckillConstants.PLACE_ORDER_TYPE_LOCK, exception, seckillOrderCommand, seckillGoods);
+        // 事务消息
+        TxMessage txMessage = this.getTxMessage(SeckillConstants.TOPIC_TX_MSG, txNo, userId, SeckillConstants.PLACE_ORDER_TYPE_LOCK, exception, seckillOrderCommand, seckillGoods);
         //发送事务消息
-        rocketMQTemplate.sendMessageInTransaction(SeckillConstants.TOPIC_TX_MSG, message, null);
+        messageSenderService.sendMessageInTransaction(txMessage, null);
         return txNo;
     }
 
@@ -137,7 +140,7 @@ public class SeckillPlaceOrderLockService implements SeckillPlaceOrderService {
         // 扣减过缓存库存
         if (BooleanUtil.isFalse(txMessage.getException())){
             String luaKey = SeckillConstants.getKey(SeckillConstants.ORDER_TX_KEY, String.valueOf(txMessage.getTxNo())).concat(SeckillConstants.LUA_SUFFIX);
-            Long result = distributedCacheService.checkRecoverStockByLua(luaKey, SeckillConstants.TX_LOG_EXPIRE_SECONDS);
+            Long result = distributedCacheService.checkExecute(luaKey, SeckillConstants.TX_LOG_EXPIRE_SECONDS);
             // 已经执行过恢复缓存库存的方法
             if (NumberUtil.equals(result, SeckillConstants.CHECK_RECOVER_STOCK_HAS_EXECUTE)){
                 logger.info("handlerCacheStock|已经执行过恢复缓存库存的方法|{}", JSONObject.toJSONString(txMessage));
